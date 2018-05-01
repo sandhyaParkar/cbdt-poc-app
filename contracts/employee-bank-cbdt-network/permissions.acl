@@ -13,53 +13,21 @@
  */
 
 /**
- * Sample access control list.
+ * Access control rules for employee-bank-cbdt-network
  */
-rule EverybodyCanReadEverything {
-    description: "Allow all participants read access to all resources"
-    participant: "emp.bank.cbdt.network.SampleParticipant"
-    operation: READ
-    resource: "emp.bank.cbdt.network.*"
-    action: ALLOW
-}
-
-rule EverybodyCanSubmitTransactions {
-    description: "Allow all participants to submit transactions"
-    participant: "emp.bank.cbdt.network.SampleParticipant"
-    operation: CREATE
-    resource: "emp.bank.cbdt.network.SampleTransaction"
-    action: ALLOW
-}
-
-rule OwnerHasFullAccessToTheirAssets {
-    description: "Allow all participants full access to their assets"
-    participant(p): "emp.bank.cbdt.network.SampleParticipant"
+rule Default {
+    description: "Allow all participants access to all resources"
+    participant: "ANY"
     operation: ALL
-    resource(r): "emp.bank.cbdt.network.SampleAsset"
-    condition: (r.owner.getIdentifier() === p.getIdentifier())
+    resource: "emp.bank.cbdt.network.*"
     action: ALLOW
 }
 
 rule SystemACL {
   description:  "System ACL to permit all access"
-  participant: "org.hyperledger.composer.system.Participant"
+  participant: "ANY"
   operation: ALL
   resource: "org.hyperledger.composer.system.**"
   action: ALLOW
 }
 
-rule NetworkAdminUser {
-    description: "Grant business network administrators full access to user resources"
-    participant: "org.hyperledger.composer.system.NetworkAdmin"
-    operation: ALL
-    resource: "**"
-    action: ALLOW
-}
-
-rule NetworkAdminSystem {
-    description: "Grant business network administrators full access to system resources"
-    participant: "org.hyperledger.composer.system.NetworkAdmin"
-    operation: ALL
-    resource: "org.hyperledger.composer.system.**"
-    action: ALLOW
-}

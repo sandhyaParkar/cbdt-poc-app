@@ -19,10 +19,49 @@
 
 /**
  * Sample transaction
- * @param {emp.bank.cbdt.network.SampleTransaction} sampleTransaction
+ * @param {emp.bank.cbdt.network.AccountTransfer} accountTransfer
  * @transaction
  */
-async function sampleTransaction(tx) {
+async function accountTransfer(tx) {
+
+if(tx.to.owner.category == 'A'){
+   tx.cbdt.value += tx.newValue * 1/10;
+   tx.to.value += tx.newValue * 9/10;
+}
+
+if(tx.to.owner.category == 'B'){
+   tx.cbdt.value += tx.newValue * 2/10;
+   tx.to.value += tx.newValue * 8/10;
+
+}
+
+ tx.from.value -= tx.newValue;
+
+ return getAssetRegistry('emp.bank.cbdt.network.Account')
+   .then (function (assetRegistry) {
+   return assetRegistry.update(tx.from);
+})
+   .then (function () {
+   return getAssetRegistry('emp.bank.cbdt.network.Account');
+})
+   .then (function (assetRegistry) {
+   return assetRegistry.update(tx.to);
+})
+ .then (function () {
+   return getAssetRegistry('emp.bank.cbdt.network.Account');
+})
+ 
+ .then (function (assetRegistry) {
+   return assetRegistry.update(tx.cbdt);
+})
+ .then (function () {
+   return getAssetRegistry('emp.bank.cbdt.network.Account');
+})
+ .then (function (assetRegistry) {
+   return assetRegistry.update(tx.bank);
+});
+
+
     // Save the old value of the asset.
     const oldValue = tx.asset.value;
 
@@ -30,7 +69,7 @@ async function sampleTransaction(tx) {
     tx.asset.value = tx.newValue;
 
     // Get the asset registry for the asset.
-    const assetRegistry = await getAssetRegistry('emp.bank.cbdt.network.SampleAsset');
+    const assetRegistry = await getAssetRegistry('emp.bank.cbdt.network.Account');
     // Update the asset in the asset registry.
     await assetRegistry.update(tx.asset);
 
